@@ -64,3 +64,11 @@ versions and don't want them to be upgraded unexpectedly:
 
 ```block-automatic-ie11 "IE10 - Win7.vmwarevm"```
 
+### open-url
+
+Since the vmrun runProgramInGuest interface applies quotes in an undocumented manner which breaks a simple
+call to Internet Explorer, the `open-url` utility streamlines opening a URL in a guest VM:
+
+```
+for vm in *.vmwarevm; do open-url "$vm" "http://`hostname`:8080/"; done
+```

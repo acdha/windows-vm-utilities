@@ -1,0 +1,24 @@
+#!/bin/sh
+# Open a URL in Internet Explorer
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 path-to-vm.vmwarevm URL"
+    exit 1
+fi
+
+PATH=$PATH:"/Applications/VMware Fusion.app/Contents/Library/"
+VM=$1
+URL=$2
+
+echo "Starting ${VM}"
+vmrun -T fusion start "${VM}"
+
+echo "\tOpening ${URL}"
+# vmrun has a bizarrely broken and undocumented interface which prevents us from
+# using runProgramInGuest to run this directly because it will incorrectly quote
+# the URL. runScriptInGuest is similarly broken if you try to use cmd.exe or
+# PowerShell but, amusingly, passing an empty "" will cause it to simply execute
+# the arguments as the command and that will actually work as long the path is
+# quoted:
+vmrun -T fusion -gu "${GUEST_USER:-IEUser}" -gp "${GUEST_PASSWORD:-Passw0rd!}" runScriptInGuest "${VM}" -activeWindow -interactive -noWait "" "\"C:\Program Files\Internet Explorer\iexplore.exe\" ${URL}"
+
