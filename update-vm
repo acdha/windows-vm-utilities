@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 path-to-vm.vmwarevm"
+    exit 1
+fi
+
+PATH=$PATH:"/Applications/VMware Fusion.app/Contents/Library/"
+VM=$1
+
+echo "Starting $1"
+vmrun -T fusion start "${VM}"
+
+echo "\tForcing Windows Update to detect"
+vmrun -T fusion -gu "${GUEST_USER:-IEUser}" -gp "${GUEST_PASSWORD:-Passw0rd!}" runProgramInGuest "${VM}" wuauclt.exe /detectnow
+
+echo "\tForcing Windows Update to update"
+vmrun -T fusion -gu "${GUEST_USER:-IEUser}" -gp "${GUEST_PASSWORD:-Passw0rd!}" runProgramInGuest "${VM}" wuauclt.exe /detectnow
+
+echo "\tScheduling a shutdown in 15 minutes"
+vmrun -T fusion -gu "${GUEST_USER:-IEUser}" -gp "${GUEST_PASSWORD:-Passw0rd!}" runProgramInGuest "${VM}" shutdown.exe /s /t 900

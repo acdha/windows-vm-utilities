@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 path-to-vm.vmwarevm"
+    exit 1
+fi
+
+PATH=$PATH:"/Applications/VMware Fusion.app/Contents/Library/"
+VM=$1
+
+vmrun -T fusion start "${VM}"
+vmrun -T fusion -gu "${GUEST_USER:-IEUser}" -gp "${GUEST_PASSWORD:-Passw0rd!}" runScriptInGuest "${VM}" reg.exe "ADD '\\.\HKLM\SOFTWARE\Microsoft\Internet Explorer\Setup\11.0' /v DoNotAllowIE11 /t REG_DWORD /d 1 /f"
